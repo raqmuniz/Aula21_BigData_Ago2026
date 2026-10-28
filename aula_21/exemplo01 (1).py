@@ -235,8 +235,8 @@ try:
     plt.figure(figsize= (16, 10))
     #Posição 1 - BoxPlot
     plt.subplot(2, 2, 1)
+  
 
-    
 #Boxplot 
     plt.boxplot(df_roubo_veiculo['roubo_veiculo'], orientation='horizontal', showmeans=True, showfliers=True)
     plt.title('Distribuição de dados')

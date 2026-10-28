@@ -23,7 +23,7 @@ try:
         # Totalizando os crimes violentos por batalhão (Var Qualitativa 'aisp' e Var Quant 'cvli')
     df_cvli = df_cvli.groupby('aisp', as_index=False)['cvli'].sum()
     
-    
+    df_cvli['aisp'] = df_cvli['aisp'].astype(str)
         # Ordenando os dados
     df_cvli = df_cvli.sort_values(
             by='cvli',
@@ -58,7 +58,20 @@ try:
 except Exception as e:
     print(f'Obtendo Medidas - {e}')
 
+try:
 
+    assimetria = df_cvli['cvli'].skew()
+
+    curtose = df_cvli['cvli'].kurtosis()
+
+    print('n\Analisando a distribuição')
+    print(30*'-')
+    print(f'Assimetria: {assimetria}')
+    print(f'Curtose: {curtose}')
+
+
+except Exception as e:
+    print(f'Erro ao calcular assimetria e curtose de dados: {e}')
 
 # Calculando os quartis
 try:
@@ -211,17 +224,16 @@ try:
     print('\nInformações de Crimes violentos por batalhões do RJ')
     plt.figure(figsize=(16, 10))
 
-
     # Posição 01 - Boxplot
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
 
-    plt.boxplot(df_cvli['cvli'], orientation='horizontal', showmeans=True)
+    plt.boxplot(df_cvli['cvli'], orientation='horizontal', showmeans=True, showfliers=True)
     plt.title('Distribuição dos dados')
     plt.xlabel('Crimes violentos')
     # plt.ylabel('Batalhões')
 
-
-    plt.subplot(1, 2, 2)
+#Posição 2
+    plt.subplot(2, 2, 2)
     plt.text(0.1, 0.95, f'Limite Inferior: {limite_inferior}', fontsize=12)
     plt.text(0.1, 0.90, f'Mínimo: {minimo}', fontsize=12)
     plt.text(0.1, 0.85, f'Q1: {q1}', fontsize=12)
@@ -237,28 +249,39 @@ try:
     plt.text(0.1, 0.35, f'Distância: {distancia}', fontsize=12)
     plt.axis('off')
     
+   #Posição 3 
+     #Gráfico de barras
+   # plt.subplot(2, 2, 3)
+
+   # df_cvli_10menores = (
+   #     df_cvli_menores.tail(10)
+   # )
+
+   # plt.barh(df_cvli_10menores['aisp'], df_cvli_10menores['cvli'])
+   # plt.ylabel('aisp')
+  #  plt.xlabel('cvli')
+   # plt.title('Bottom 10 - Batalhões com menores taxas de crimes violentos')
     
-    plt.suptitle('Informações sobre Crimes violentos') 
-
-    plt.show()
-
-except Exception as e:
-    print(f'Erro ao plotar o grafico: {e}')
-
-
-# Barras | 10 Menores Valores
+# Histograma
     plt.subplot(2, 2, 3)
 
-    df_cvli_10menores = (
-        df_cvli_menores.tail(10)
-    )
+    plt.hist(array_cvli, bins=100, edgecolor= 'black')
+    plt.axvline(media_cvli, color='green', linewidth= 1)
+    plt.axvline(mediana_cvli, color='orange', linewidth= 1)
 
-    plt.barh(df_cvli_10menores['aisp'], df_cvli_10menores['cvli'])
-    plt.ylabel('aisp')
-    plt.xlabel('cvli')
-    plt.title('Bottom 10 - Batalhões com menores taxas de crimes violentos')
+    contagens, limites = np.histogram(array_cvli, bins=100)
+    #print(contagens)
 
-
+    print(f'\nFaixas de roubos do histograma')
+    for i in range(len(contagens)):
+        # Não vai printar as contagens de zero município
+        if contagens[i] > 0:
+            print(
+                f'Faixa {i + 1}:'
+                f'{limites[i]:.0f} até {limites[i+1]:.0f} cvli'
+                f'=> {contagens[i]} aisp'
+        )
+            
     # 4ª Posição - Colunas | Top 10 Maiores
     plt.subplot(2, 2, 4)
     # Filtrando e Ordenando
@@ -282,5 +305,3 @@ except Exception as e:
 except Exception as e:
     print(f'Erro ao plotar o grafico: {e}')
     
-    
-   
